@@ -10,15 +10,18 @@
             <div class=" mb-5 contact-us" style="">
                 <div class="contact-form bg-light p-30">
                     <div id="success"></div>
-                    <form name="sentMessage" id="contactForm" novalidate="novalidate">
+                    <form method="post">
+                        {% csrf_token %}
                         <div class="control-group">
-                            <input type="email" class="form-control" id="email" placeholder="Your Email"
-                                required="required" data-validation-required-message="Please enter your email" />
+                            {% for error in form.email.errors %}
+                            	<p class="alert alert-danger">{{ error }}</p>
+                            {% endfor %}
+
+                            {{ form.email }}
                             <p class="help-block text-danger"></p>
                         </div>
                         <div class="control-group">
-                            <input type="password" class="form-control" id="name" placeholder="Your password"
-                                required="required" data-validation-required-message="Please enter your name" />
+                            {{ form.password }}
                             <p class="help-block text-danger"></p>
                         </div>
 
