@@ -2,6 +2,8 @@ from django import forms
 from .models import User
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
+from django.contrib.auth import authenticate
 
 
 
@@ -53,10 +55,31 @@ class UserChangeForm(forms.ModelForm):
 
 
 
-
 class LoginForm(forms.Form):
-    email = forms.EmailField(widget=forms.TextInput(attrs={"class" : "form-control"}))
-    password = forms.CharField(widget=forms.PasswordInput(attrs={"class" : "form-control"}))
+    email = forms.EmailField(
+        widget=forms.TextInput(attrs={"class": "form-control"}),
+    )
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={"class": "form-control"})
+    )
+
+    def clean_email(self):
+        email = self.cleaned_data.get("email")
+        if not User.objects.filter(email=email).exists():
+            raise ValidationError("This email is not registered.")
+        return email
+
+    def clean(self):
+        cleaned_data = super().clean()
+        email = cleaned_data.get("email")
+        password = cleaned_data.get("password")
+
+        if email and password:
+            user = authenticate(username=email, password=password)
+            if user is None:
+                raise ValidationError("Invalid email or password.")
+
+        return cleaned_data
 
 
 
