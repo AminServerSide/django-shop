@@ -5,7 +5,7 @@
 
     <!-- Contact Start -->
     <div class="container-fluid">
-        <h2 class="section-title position-relative text-uppercase text-center mx-xl-5 mb-4"><span class="bg-secondary pr-3">Login</span></h2>
+        <h2 class="section-title position-relative text-uppercase text-center mx-xl-5 mb-4"><span class="bg-secondary pr-3">Register</span></h2>
         <div class="px-xl-5">
             <div class="mb-5 contact-us" style="">
                 <div class="contact-form bg-light p-30">
@@ -18,6 +18,7 @@
                     </div>
                     <form method="post">
                         {% csrf_token %}
+                        <!-- Email Field -->
                         <div class="control-group">
                             {% for error in form.email.errors %}
                                 <p class="alert alert-danger">{{ error }}</p>
@@ -25,18 +26,35 @@
                             {{ form.email }}
                             <p class="help-block text-danger"></p>
                         </div>
+                        <!-- Fullname Field -->
                         <div class="control-group">
-                            {% for error in form.password.errors %}
+                            {% for error in form.fullname.errors %}
                                 <p class="alert alert-danger">{{ error }}</p>
                             {% endfor %}
-                            {{ form.password }}
+                            {{ form.fullname }}
+                            <p class="help-block text-danger"></p>
+                        </div>
+                        <!-- Password Field -->
+                        <div class="control-group">
+                            {% for error in form.password1.errors %}
+                                <p class="alert alert-danger">{{ error }}</p>
+                            {% endfor %}
+                            {{ form.password1 }}
+                            <p class="help-block text-danger"></p>
+                        </div>
+                        <!-- Password Confirmation Field -->
+                        <div class="control-group">
+                            {% for error in form.password2.errors %}
+                                <p class="alert alert-danger">{{ error }}</p>
+                            {% endfor %}
+                            {{ form.password2 }}
                             <p class="help-block text-danger"></p>
                         </div>
                         <div>
-                            <button class="btn btn-primary py-2 px-4" type="submit" id="sendMessageButton">Login</button>
+                            <button class="btn btn-primary py-2 px-4" type="submit" id="sendMessageButton">Register</button>
                         </div>
                     </form>
-                    <p class="mt-3 text-center">Don't have an account? <a href="{% url 'account:user_register' %}">Register here</a>.</p>
+                    <p class="mt-3 text-center">Already have an account? <a href="{% url 'account:user_login' %}">Login here</a>.</p>
                 </div>
             </div>
         </div>
