@@ -10,18 +10,18 @@ class UserCreationForm(forms.ModelForm):
     """A form for creating new users. Includes all the required fields, plus a repeated password."""
     password1 = forms.CharField(
         label="Password",
-        widget=forms.PasswordInput(attrs={"class": "form-control", "placeholder": "Enter your password"})
+        widget=forms.PasswordInput(attrs={"class": "form-control", "placeholder": "Enter your password" , "type": "password"}),
     )
     password2 = forms.CharField(
         label="Password confirmation",
-        widget=forms.PasswordInput(attrs={"class": "form-control", "placeholder": "Confirm your password"})
+        widget=forms.PasswordInput(attrs={"class": "form-control", "placeholder": "Confirm your password" , "type": "password"}),
     )
 
     class Meta:
         model = User
         fields = ["email", "fullname"]
         widgets = {
-            "email": forms.EmailInput(attrs={"class": "form-control", "placeholder": "Enter your email"}),
+            "email": forms.EmailInput(attrs={"class": "form-control", "placeholder": "Enter your email" , "type": "email"}),
             "fullname": forms.TextInput(attrs={"class": "form-control", "placeholder": "Enter your full name"}),
         }
 
@@ -57,10 +57,10 @@ class UserChangeForm(forms.ModelForm):
 
 class LoginForm(forms.Form):
     email = forms.EmailField(
-        widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "Enter your email"}),
+        widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "Enter your email" , "type": "email"}),
     )
     password = forms.CharField(
-        widget=forms.PasswordInput(attrs={"class": "form-control", "placeholder": "Enter your password"})
+        widget=forms.PasswordInput(attrs={"class": "form-control", "placeholder": "Enter your password" , "type": "password"}),
     )
 
     def clean_email(self):
