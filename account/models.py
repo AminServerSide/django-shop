@@ -67,3 +67,21 @@ class User(AbstractBaseUser):
         "Is the user a member of staff?"
         # Simplest possible answer: All admins are staff
         return self.is_admin
+
+
+
+class Address(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE , related_name="addresses")
+    fullname = models.CharField(max_length=255)
+    email = models.EmailField()
+    phone = models.CharField(max_length=255)
+    address = models.CharField(max_length=255)
+    post_code = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.user.phone
+
+
+
+
+

@@ -1,5 +1,7 @@
 from django import forms
-from .models import User
+
+from . import models
+from .models import User, Address
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
@@ -80,3 +82,9 @@ class LoginForm(forms.Form):
                 raise ValidationError("Invalid email or password.")
 
         return cleaned_data
+
+class AddressCreationForm(forms.ModelForm):
+    user = forms.IntegerField(required=False)
+    class Meta:
+        model = Address
+        exclude = "__all__"

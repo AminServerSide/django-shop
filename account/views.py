@@ -1,7 +1,12 @@
 from django.contrib.auth import authenticate, login , logout
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from .forms import LoginForm, UserCreationForm
+from django.views import View
+from django.views.decorators.http import require_POST
+
+from cart.cart_modules import Cart
+from cart.models import Order, OrderItem
+from .forms import LoginForm, UserCreationForm , AddressCreationForm
 from .models import User
 
 
@@ -40,3 +45,32 @@ def register_user(request):
 def logout_user(request):
     logout(request)
     return redirect("/")
+
+
+
+def add_address(request):
+    if request.method == "POST":
+        form = AddressCreationForm(request.POST)
+        if form.is_valid():
+            address = form.save(commit=False)
+            address.user = request.user
+            address.save()
+            next_page = request.GET.get('next')
+            if next_page:
+                return redirect(next_page)
+    else:
+        form = AddressCreationForm()
+
+    return render(request, "account/add_address.html", {"form": form})
+
+
+
+
+
+
+
+
+
+
+
+
