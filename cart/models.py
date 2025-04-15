@@ -1,3 +1,6 @@
+from datetime import timezone
+from decimal import Decimal
+
 from django.db import models
 from account.models import User
 from product.models import Product
@@ -23,3 +26,14 @@ class OrderItem(models.Model):
 
     def __str__(self):
         return f"Item of Order #{self.order.id} - {self.product.title}" if self.order and self.product else "Order Item"
+
+
+class DiscountCode(models.Model):
+    name = models.CharField(max_length=15, unique=True)
+    discount = models.PositiveSmallIntegerField(default=0)  # stored as a percentage: 10, 25, etc.
+    quantity = models.PositiveIntegerField(default=1)
+    is_active = models.BooleanField(default=True)
+    expires_at = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.name} - {self.discount}%"

@@ -1,8 +1,16 @@
+from django.contrib import messages
+from django.utils import timezone
+from decimal import Decimal
+
+from django.contrib import messages
 from django.shortcuts import render, redirect ,get_object_or_404
 from django.views import View
+
+from account import forms
 from product.models import Product
 from .cart_modules import Cart
-from .models import Order, OrderItem
+from .forms import DiscountForm
+from .models import Order, OrderItem, DiscountCode
 
 
 def cart_detail_view(request):
@@ -44,9 +52,44 @@ def OrderCreation(request):
         return redirect("cart:order_detail" , order.id)
 
 
+class ApplyDiscountView(View):
+    def post(self, request, pk):
+        form = DiscountForm(request.POST)
+        order = get_object_or_404(Order, id=pk)
 
+        if form.is_valid():
+            code = form.cleaned_data['discount_code']
 
+            try:
+                discount = DiscountCode.objects.get(name=code)
 
+                # Check validity
+                if not discount.is_active or discount.quantity == 0:
+                    messages.error(request, "This discount code is inactive or out of stock.")
+                    return redirect("cart:order_detail", order.id)
 
+                if discount.expires_at and timezone.now() > discount.expires_at:
+                    messages.error(request, "This discount code has expired.")
+                    return redirect("cart:order_detail", order.id)
 
+                if discount.discount <= 0 or discount.discount > 100:
+                    messages.error(request, "Invalid discount percentage.")
+                    return redirect("cart:order_detail", order.id)
 
+                # Apply discount
+                discount_rate = Decimal(discount.discount) / 100
+                discount_amount = order.total_price * discount_rate
+                order.total_price = max(order.total_price - discount_amount, 0)
+                order.save()
+
+                discount.quantity -= 1
+                discount.save()
+
+                messages.success(request, f"Discount code '{discount.name}' applied successfully!")
+
+            except DiscountCode.DoesNotExist:
+                messages.error(request, "Discount code not found.")
+        else:
+            messages.error(request, "Invalid input.")
+
+        return redirect("cart:order_detail", order.id)
