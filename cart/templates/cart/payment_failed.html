@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Failed</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
+        .error { color: red; }
+        .button { 
+            display: inline-block; 
+            padding: 10px 20px; 
+            background-color: #007bff; 
+            color: white; 
+            text-decoration: none; 
+            border-radius: 5px; 
+            margin-top: 20px; 
+        }
+    </style>
+</head>
+<body>
+    <h1 class="error">Payment Failed</h1>
+    <p>{{ message|default:"There was an issue processing your payment." }}</p>
+    <p>Please try again or contact support.</p>
+    <a href="{% url 'cart:order_detail' id=order.id %}" class="button">Back to Order</a>
+</body>
+</html>

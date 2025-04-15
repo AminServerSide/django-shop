@@ -11,6 +11,7 @@ class Order(models.Model):
     total_price = models.IntegerField(default=0)
     created = models.DateTimeField(auto_now_add=True)
     is_paid = models.BooleanField(default=False)
+    address = models.TextField(blank=True , null=True)
 
     def __str__(self):
         return f"Order #{self.id} - {self.user.fullname}" if self.user else f"Order #{self.id}"

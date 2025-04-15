@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .order-details {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 10px;
+        }
+        .cancel {
+            background-color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Payment for Order #{{ order.id }}</h1>
+        <div class="order-details">
+            <p><strong>Order Total:</strong> ${{ order.get_total|floatformat:2 }}</p>
+            <p><strong>Status:</strong> {% if order.is_paid %}Paid{% else %}Pending{% endif %}</p>
+        </div>
+        <p>Click the button below to proceed with the payment.</p>
+        <a href="{% url 'cart:fake_payment' pk=order.id %}" class="button">Pay Now</a>
+        <a href="{% url 'cart:order_detail' id=order.id %}" class="button cancel">Cancel</a>
+    </div>
+</body>
+</html>

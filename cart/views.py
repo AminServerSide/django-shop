@@ -1,12 +1,11 @@
 from django.contrib import messages
+from django.shortcuts import render, redirect, get_object_or_404
+from django.views import View
 from django.utils import timezone
+from django.contrib.auth.decorators import login_required
 from decimal import Decimal
 
-from django.contrib import messages
-from django.shortcuts import render, redirect ,get_object_or_404
-from django.views import View
-
-from account import forms
+from account.models import Address
 from product.models import Product
 from .cart_modules import Cart
 from .forms import DiscountForm
@@ -16,40 +15,43 @@ from .models import Order, OrderItem, DiscountCode
 def cart_detail_view(request):
     if request.method == 'GET':
         cart = Cart(request)
-        return render(request, "cart/cart_detail.html" , {'cart':cart})
+        return render(request, "cart/cart_detail.html", {'cart': cart})
 
 
-
-def cart_add_view(request , pk):
+def cart_add_view(request, pk):
     if request.method == 'POST':
         product = get_object_or_404(Product, id=pk)
-        size , color , quantity = request.POST.get('size'), request.POST.get('color') , request.POST.get('quantity')
+        size = request.POST.get('size')
+        color = request.POST.get('color')
+        quantity = request.POST.get('quantity')
         cart = Cart(request)
-        cart.add(product , quantity, color, size)
+        cart.add(product, quantity, color, size)
         return redirect("cart:cart_detail")
 
-def cart_remove_view(request , pk):
+
+def cart_remove_view(request, pk):
     if request.method == 'GET':
         cart = Cart(request)
         cart.remove(pk)
         return redirect("cart:cart_detail")
 
-def Order_detail(request , id):
+
+def order_detail(request, id):
     if request.method == "GET":
         order = get_object_or_404(Order, id=id)
-        return render(request , 'cart/order_detail.html' , {'order':order})
+        return render(request, 'cart/order_detail.html', {'order': order})
 
 
-def OrderCreation(request):
+def order_creation(request):
     if request.method == "GET":
         cart = Cart(request)
-        order = Order.objects.create(user=request.user , total_price=cart.total())
+        order = Order.objects.create(user=request.user, total_price=cart.total())
         for item in cart:
             OrderItem.objects.create(order=order, product=item['product'], color=item['color'],
-                                     size=item['size'], quantity=item['quantity'] ,  price=item['price'])
+                                     size=item['size'], quantity=item['quantity'], price=item['price'])
 
         cart.remove_cart()
-        return redirect("cart:order_detail" , order.id)
+        return redirect("cart:order_detail", id=order.id)
 
 
 class ApplyDiscountView(View):
@@ -63,20 +65,18 @@ class ApplyDiscountView(View):
             try:
                 discount = DiscountCode.objects.get(name=code)
 
-                # Check validity
                 if not discount.is_active or discount.quantity == 0:
                     messages.error(request, "This discount code is inactive or out of stock.")
-                    return redirect("cart:order_detail", order.id)
+                    return redirect("cart:order_detail", id=order.id)
 
                 if discount.expires_at and timezone.now() > discount.expires_at:
                     messages.error(request, "This discount code has expired.")
-                    return redirect("cart:order_detail", order.id)
+                    return redirect("cart:order_detail", id=order.id)
 
                 if discount.discount <= 0 or discount.discount > 100:
                     messages.error(request, "Invalid discount percentage.")
-                    return redirect("cart:order_detail", order.id)
+                    return redirect("cart:order_detail", id=order.id)
 
-                # Apply discount
                 discount_rate = Decimal(discount.discount) / 100
                 discount_amount = order.total_price * discount_rate
                 order.total_price = max(order.total_price - discount_amount, 0)
@@ -92,4 +92,34 @@ class ApplyDiscountView(View):
         else:
             messages.error(request, "Invalid input.")
 
-        return redirect("cart:order_detail", order.id)
+        return redirect("cart:order_detail", id=order.id)
+
+
+def fake_payment_view(request, pk):
+    order = get_object_or_404(Order, id=pk, user=request.user)
+    order.is_paid = True  # Ensure this field exists in your model
+    order.save()
+    return redirect('cart:order_detail', id=order.id)
+
+
+
+def fake_verify_view(request):
+    order_id = request.session.get('order_id')
+    if not order_id:
+        return render(request, 'cart/payment_failed.html', {'message': 'Order not found'})
+
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    order.is_paid = True
+    order.save()
+    return render(request, 'cart/payment_success.html', {'order': order})
+
+
+def payment_view(request, pk):
+    order = get_object_or_404(Order, id=pk, user=request.user)
+    if order.is_paid:
+        return redirect('cart:order_detail', id=order.id)
+
+    # Store order_id in session for verification
+    request.session['order_id'] = order.id
+
+    return render(request, 'cart/payment.html', {'order': order})
