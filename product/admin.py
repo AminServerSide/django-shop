@@ -1,4 +1,3 @@
-# product/admin.py
 from django.contrib import admin
 from .models import Size, Color, Category, Product, Information
 
@@ -21,7 +20,12 @@ class ProductAdmin(admin.ModelAdmin):
     search_fields = ('title', 'description')  # Enable search functionality
     list_filter = ('category', 'size', 'color')  # Allow filtering by category, size, and color
     filter_horizontal = ('category', 'size', 'color')  # Display many-to-many fields more easily
-    readonly_fields = ('image',)  # Make the image field read-only in the admin
+    # Removed 'image' from readonly_fields to allow image uploads
+    fieldsets = (
+        (None, {
+            'fields': ('title', 'description', 'price', 'discount', 'image', 'category', 'size', 'color')
+        }),
+    )  # Organize fields in the admin form
     actions = ['apply_discount']  # Custom admin actions
 
     # Custom method to display the categories associated with the product
