@@ -119,6 +119,8 @@ USE_I18N = True
 USE_TZ = True
 
 
+LOGIN_URL = '/account/login'
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
@@ -134,7 +136,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = "account.User"
 
 
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379",
+    }
+}
 
-MERCHANT = "00000000-0000-0000-0000-000000000000"
 
-SANDBOX = True
+

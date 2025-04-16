@@ -17,6 +17,9 @@ def login_user(request):
             cd = form.cleaned_data
             user = User.objects.get(email=cd["email"])  # Retrieve user by email
             login(request, user)
+            next_page = request.GET.get("next")
+            if next_page:
+                return redirect(next_page)
             return redirect("/")
         else:
             form.add_error("email", "Invalid email or password")

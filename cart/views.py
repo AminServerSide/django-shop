@@ -36,12 +36,14 @@ def cart_remove_view(request, pk):
         return redirect("cart:cart_detail")
 
 
+@login_required
 def order_detail(request, id):
     if request.method == "GET":
-        order = get_object_or_404(Order, id=id)
+        order = get_object_or_404(Order, id=id, user=request.user)
         return render(request, 'cart/order_detail.html', {'order': order})
 
 
+@login_required
 def order_creation(request):
     if request.method == "GET":
         cart = Cart(request)
@@ -95,14 +97,15 @@ class ApplyDiscountView(View):
         return redirect("cart:order_detail", id=order.id)
 
 
+@login_required
 def fake_payment_view(request, pk):
     order = get_object_or_404(Order, id=pk, user=request.user)
-    order.is_paid = True  # Ensure this field exists in your model
+    order.is_paid = True
     order.save()
     return redirect('cart:order_detail', id=order.id)
 
 
-
+@login_required
 def fake_verify_view(request):
     order_id = request.session.get('order_id')
     if not order_id:
@@ -114,12 +117,11 @@ def fake_verify_view(request):
     return render(request, 'cart/payment_success.html', {'order': order})
 
 
+@login_required
 def payment_view(request, pk):
     order = get_object_or_404(Order, id=pk, user=request.user)
     if order.is_paid:
         return redirect('cart:order_detail', id=order.id)
 
-    # Store order_id in session for verification
     request.session['order_id'] = order.id
-
     return render(request, 'cart/payment.html', {'order': order})
