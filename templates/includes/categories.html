@@ -1,0 +1,101 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Multi Dropdown Menu</title>
+    <style>
+        /* Basic Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+
+        /* Menu styles */
+        #menu {
+            list-style: none;
+            background-color: #333;
+            display: flex;
+            padding: 0.5rem 1rem;
+        }
+
+        #menu > li {
+            position: relative;
+        }
+
+        #menu > li > a {
+            color: white;
+            text-decoration: none;
+            padding: 0.75rem 1rem;
+            display: block;
+            transition: background 0.3s;
+        }
+
+        #menu > li:hover > a {
+            background-color: #444;
+        }
+
+        /* Dropdown styles */
+        .dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: #444;
+            list-style: none;
+            min-width: 200px;
+            z-index: 1000;
+        }
+
+        .dropdown li a {
+            color: white;
+            padding: 0.5rem 1rem;
+            display: block;
+            text-decoration: none;
+        }
+
+        .dropdown li a:hover {
+            background-color: #555;
+        }
+
+        li.parent:hover .dropdown {
+            display: block;
+        }
+
+        /* Nested dropdowns */
+        .dropdown .parent {
+            position: relative;
+        }
+
+        .dropdown .parent:hover .dropdown {
+            left: 100%;
+            top: 0;
+        }
+    </style>
+</head>
+<body>
+
+<ul id="menu">
+    {% for category in categories %}
+        {% if not category.parent %}
+            <li class="parent">
+                <a href="#">{{ category.title }}</a>
+                {% if category.subs.all %}
+                    <ul class="dropdown">
+                        {% include 'includes/sub_categories.html' %}
+                    </ul>
+                {% endif %}
+            </li>
+        {% endif %}
+    {% endfor %}
+</ul>
+
+</body>
+</html>

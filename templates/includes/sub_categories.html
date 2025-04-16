@@ -1,10 +1,12 @@
-<ul class="child">
-    {% for category in category.subs.all %}
-        <li class="parent"><a href="#">{{ category.title }}<span class="expand">{% if category.subs.all %}»{% endif %}</span>
-           {% if category.subs.all %}
-               {% include 'includes/sub_categories.html' %}
-           {% endif %}
-        </a>
-        </li>
-    {% endfor %}
-</ul>
+{% for sub in category.subs.all %}
+    <li class="{% if sub.subs.all %}parent{% endif %}">
+        <a href="#">{{ sub.title }}</a>
+        {% if sub.subs.all %}
+            <ul class="dropdown">
+                {% with category=sub %}
+                    {% include 'includes/sub_categories.html' %}
+                {% endwith %}
+            </ul>
+        {% endif %}
+    </li>
+{% endfor %}

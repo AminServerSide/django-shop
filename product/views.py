@@ -16,4 +16,4 @@ def navbar_partial(request):
 def category_list(request):
     categories = Category.objects.all()
     context = {'categories': categories}
-    return render(request, 'includes/category.html', context)
+    return render(request, 'includes/categories.html', context)
