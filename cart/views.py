@@ -4,6 +4,8 @@ from django.views import View
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from decimal import Decimal
+from django.http import JsonResponse
+
 
 from account.models import Address
 from product.models import Product
@@ -17,6 +19,15 @@ def cart_detail_view(request):
         cart = Cart(request)
         return render(request, "cart/cart_detail.html", {'cart': cart})
 
+# def cart_item_count(request):
+#     count = 0
+#     if request.user.is_authenticated:
+#         try:
+#             order = Order.objects.get(user=request.user, is_paid=False)
+#             count = order.item.count()
+#         except Order.DoesNotExist:
+#             pass
+#     return {'cart_item_count': count}
 
 def cart_add_view(request, pk):
     if request.method == 'POST':

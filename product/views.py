@@ -1,6 +1,8 @@
 from django.shortcuts import render
 
 from django.shortcuts import render, get_object_or_404 , redirect
+from django.views.generic import ListView
+
 from .models import Product, Category , Comment
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
@@ -36,28 +38,37 @@ def category_detail(request, pk):
 
 
 
-def product_list(request):
-    colors = request.GET.getlist('color')
-    sizes = request.GET.getlist('size')
-    min_price = request.GET.get('min_price')
-    max_price = request.GET.get('max_price')
 
-    queryset = Product.objects.all()
+class ProductListView(ListView):
+    template_name = 'product/products_list.html'
+    context_object_name = 'object_list'
 
-    if colors:
-        queryset = queryset.filter(color__title__in=colors).distinct()
+    def get_queryset(self):
+        request = self.request
+        colors = request.GET.getlist('color')
+        sizes = request.GET.getlist('size')
+        min_price = request.GET.get('min-price')
+        max_price = request.GET.get('max-price')
+        queryset = Product.objects.all()
 
-    if sizes:
-        queryset = queryset.filter(size__title__in=sizes).distinct()
+        if colors:
+            queryset = queryset.filter(color__title__in=colors).distinct()
 
-    if min_price and max_price:
-        queryset = queryset.filter(price__lte=max_price, price__gte=min_price)
+        if sizes:
+            queryset = queryset.filter(size__title__in=sizes).distinct()
 
-    context = {
-        'object_list': queryset
-    }
+        if min_price and max_price:
+            queryset = queryset.filter(price__gte=min_price, price__lte=max_price)
 
-    return render(request, 'product/products_list.html', context)
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+
+
+
+
 
 @login_required()
 def create_comment(request, product_id):
