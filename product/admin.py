@@ -15,18 +15,19 @@ class CategoryAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('title',)}  # Automatically fill slug from the title
     list_filter = ('parent',)  # Allow filtering by parent category
 
+
 class ProductAdmin(admin.ModelAdmin):
     list_display = ('title', 'price', 'discount', 'category_list')  # Display product info
     search_fields = ('title', 'description')  # Enable search functionality
     list_filter = ('category', 'size', 'color')  # Allow filtering by category, size, and color
     filter_horizontal = ('category', 'size', 'color')  # Display many-to-many fields more easily
-    # Removed 'image' from readonly_fields to allow image uploads
     fieldsets = (
         (None, {
             'fields': ('title', 'description', 'price', 'discount', 'image', 'category', 'size', 'color')
         }),
     )  # Organize fields in the admin form
     actions = ['apply_discount']  # Custom admin actions
+    ordering = ('-created',)  # Sort by creation time (descending)
 
     # Custom method to display the categories associated with the product
     def category_list(self, obj):

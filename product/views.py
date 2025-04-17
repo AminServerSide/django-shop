@@ -7,6 +7,8 @@ from .models import Product, Category , Comment
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 
+from django.core.paginator import Paginator
+
 
 
 
@@ -42,6 +44,7 @@ def category_detail(request, pk):
 class ProductListView(ListView):
     template_name = 'product/products_list.html'
     context_object_name = 'object_list'
+    paginate_by = 2  # Number of products per page
 
     def get_queryset(self):
         request = self.request
@@ -64,10 +67,11 @@ class ProductListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        query = self.request.GET.copy()
+        if 'page' in query:
+            del query['page']
+        context['query_params'] = query.urlencode()
         return context
-
-
-
 
 
 @login_required()
