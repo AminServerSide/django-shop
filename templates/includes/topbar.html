@@ -45,17 +45,15 @@
                 </a>
             </div>
             <div class="col-lg-4 col-6 text-left">
-                <form action="">
+                <form id="search_form" method="GET" action="{% url 'product:search_products' %}">
                     <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Search for products">
-                        <div class="input-group-append">
-                            <span class="input-group-text bg-transparent text-primary">
-                                <i class="fa fa-search"></i>
-                            </span>
+                        <div class="sidebar-item search">
+                            <input type="text" name="q" class="searchText" placeholder="type to search..." autocomplete="on">
                         </div>
                     </div>
                 </form>
             </div>
+
             <div class="col-lg-4 col-6 text-right">
                 <p class="m-0">Customer Service</p>
                 <h5 class="m-0">+012 345 6789</h5>

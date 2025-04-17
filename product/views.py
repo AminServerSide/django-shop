@@ -6,6 +6,8 @@ from django.views.generic import ListView
 from .models import Product, Category , Comment
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from django.db.models import Q
+
 
 from django.core.paginator import Paginator
 
@@ -74,6 +76,19 @@ class ProductListView(ListView):
         return context
 
 
+def search_products(request):
+    query = request.GET.get('q')
+    if query:
+        products = Product.objects.filter(title__icontains=query)
+    else:
+        products = Product.objects.all()  # Show all products when no query is entered.
+
+    return render(request, 'product/products_list.html', {
+        'object_list': products,  # Make sure this matches with the template variable
+        'query': query,
+    })
+
+
 @login_required()
 def create_comment(request, product_id):
     product = get_object_or_404(Product, id=product_id)
@@ -94,3 +109,6 @@ def create_comment(request, product_id):
 
     # Redirect back to the product detail page
     return redirect('product:product-detail', pk=product.id)
+
+
+
