@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'cart.apps.CartConfig',
     'blog.apps.BlogConfig',
     'widget_tweaks',
-    'django_render_partial'
+    'django_render_partial',
+    'django_social_share',
 ]
 
 MIDDLEWARE = [

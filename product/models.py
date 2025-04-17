@@ -1,5 +1,8 @@
 from django.db import models
 
+from account.models import User
+
+
 class Size(models.Model):
     title = models.CharField(max_length=10)
 
@@ -11,6 +14,8 @@ class Color(models.Model):
 
     def __str__(self):
         return self.title
+
+
 
 
 
@@ -47,14 +52,15 @@ class Information(models.Model):
 
 
 
+class Comment(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="comments")
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    body = models.TextField()
+    parent = models.ForeignKey("self", on_delete=models.CASCADE, blank=True, null=True, related_name="replies")
+    created_at = models.DateTimeField(auto_now_add=True)
 
-
-
-
-
-
-
-
+    def __str__(self):
+        return self.body[:40]
 
 
 

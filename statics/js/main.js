@@ -102,3 +102,48 @@
     
 })(jQuery);
 
+
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    const commentForm = document.getElementById("comment-form");
+    if (commentForm) {
+        commentForm.addEventListener("submit", function (e) {
+            e.preventDefault(); // Prevent form from submitting normally
+
+            const formData = new FormData(commentForm);
+            fetch(commentForm.action, {
+                method: "POST",
+                body: formData,
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest"
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "success") {
+                    // Optionally: append comment to DOM dynamically
+                    alert("Comment added!");
+                    commentForm.reset(); // Clear form
+                } else {
+                    alert(data.message || "Something went wrong.");
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+        });
+    }
+});
+
+
+document.querySelectorAll('.reply-btn').forEach(button => {
+  button.addEventListener('click', () => {
+    const id = button.dataset.id;
+    const form = document.getElementById(`reply-form-${id}`);
+    form.style.display = form.style.display === 'block' ? 'none' : 'block';
+  });
+});
+
+
+

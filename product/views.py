@@ -1,12 +1,20 @@
 from django.shortcuts import render
 
-from django.shortcuts import render, get_object_or_404
-from .models import Product, Category
+from django.shortcuts import render, get_object_or_404 , redirect
+from .models import Product, Category , Comment
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+
+
 
 
 def product_detail_view(request, pk):
     product = get_object_or_404(Product, pk=pk)
-    return render(request, 'product/product_detail.html', {'product': product})
+    top_level_comments = product.comments.filter(parent__isnull=True).select_related('user').prefetch_related('replies__user')
+    return render(request, 'product/product_detail.html', {
+        'product': product,
+        'comments': top_level_comments,
+    })
 
 def navbar_partial(request):
     categories = Category.objects.all()
@@ -50,3 +58,24 @@ def product_list(request):
     }
 
     return render(request, 'product/products_list.html', context)
+
+@login_required()
+def create_comment(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    body = request.POST.get("body")
+    parent_id = request.POST.get("parent_id")
+
+    if body:
+        parent_comment = (
+            Comment.objects.filter(id=parent_id, product=product).first()
+            if parent_id else None
+        )
+        Comment.objects.create(
+            product=product,
+            user=request.user,
+            body=body,
+            parent=parent_comment
+        )
+
+    # Redirect back to the product detail page
+    return redirect('product:product-detail', pk=product.id)

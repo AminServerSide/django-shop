@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Size, Color, Category, Product, Information
+from .models import Size, Color, Category, Product, Information , Comment
 
 class SizeAdmin(admin.ModelAdmin):
     list_display = ('title',)  # Columns to display in the list view
@@ -51,3 +51,4 @@ admin.site.register(Color, ColorAdmin)
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Information, InformationAdmin)
+admin.site.register(Comment)
