@@ -18,6 +18,15 @@ def category_list(request):
     context = {'categories': categories}
     return render(request, 'includes/categories.html', context)
 
+def category_detail(request, pk):
+    category = get_object_or_404(Category, pk=pk)
+    products = Product.objects.filter(category=category)
+    return render(request, 'product/category_detail.html', {
+        'category': category,
+        'products': products
+    })
+
+
 
 def product_list(request):
     colors = request.GET.getlist('color')

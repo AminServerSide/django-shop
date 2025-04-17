@@ -127,26 +127,29 @@
                         </div>
                     </div>
                     {% for product in object_list %}
-                       <div class="col-lg-4 col-md-6 col-sm-6 pb-1">
-                           <div class="product-item bg-light mb-4">
-                               <div class="product-img position-relative overflow-hidden">
-                                   <img class="img-fluid w-100" src="{{ product.image.url }}" alt="Static Product">
-                                   <div class="product-action">
-                                       <a class="btn btn-outline-dark btn-square" href="#"><i class="fa fa-shopping-cart"></i></a>
-                                       <a class="btn btn-outline-dark btn-square" href="#"><i class="far fa-heart"></i></a>
-                                       <a class="btn btn-outline-dark btn-square" href="#"><i class="fa fa-sync-alt"></i></a>
-                                       <a class="btn btn-outline-dark btn-square" href="#"><i class="fa fa-search"></i></a>
-                                   </div>
-                               </div>
-                               <div class="text-center py-4">
-                                   <a class="h6 text-decoration-none text-truncate" href="#">{{ product.title }}</a>
-                                   <div class="d-flex align-items-center justify-content-center mt-2">
-                                       <h5>${{ product.price }}</h5>
-                                   </div>
-                               </div>
-                           </div>
-                       </div>
-                    {% endfor %}
+   <div class="col-lg-4 col-md-6 col-sm-6 pb-1">
+       <div class="product-item bg-light mb-4">
+           <div class="product-img position-relative overflow-hidden">
+               <!-- Set fixed height and width directly in the HTML -->
+               <img class="img-fluid w-100" src="{{ product.image.url }}" alt="Static Product" style="height: 200px; object-fit: cover;">
+               <div class="product-action">
+                   <a class="btn btn-outline-dark btn-square" href="#"><i class="fa fa-shopping-cart"></i></a>
+                   <a class="btn btn-outline-dark btn-square" href="#"><i class="far fa-heart"></i></a>
+                   <a class="btn btn-outline-dark btn-square" href="#"><i class="fa fa-sync-alt"></i></a>
+                   <a class="btn btn-outline-dark btn-square" href="#"><i class="fa fa-search"></i></a>
+               </div>
+           </div>
+           <div class="text-center py-4">
+               <!-- Link to product detail page -->
+               <a class="h6 text-decoration-none text-truncate" href="{% url 'product:product-detail' pk=product.pk %}">{{ product.title }}</a>
+               <div class="d-flex align-items-center justify-content-center mt-2">
+                   <h5>${{ product.price }}</h5>
+               </div>
+           </div>
+       </div>
+   </div>
+{% endfor %}
+
 
 
 

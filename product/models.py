@@ -18,6 +18,7 @@ class Category(models.Model):
     parent = models.ForeignKey("self", on_delete=models.CASCADE, blank=True , null=True , related_name="subs")
     title = models.CharField(max_length=100)
     slug = models.SlugField()
+    image = models.ImageField(upload_to="images/", null=True, blank=True , default="images/blank.png")
 
 
     def __str__(self):
