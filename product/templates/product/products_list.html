@@ -127,7 +127,7 @@
                             <img class="img-fluid w-100" src="{{ product.image.url }}" alt="Static Product" style="height: 200px; object-fit: cover;">
                             <div class="product-action">
                                 <a class="btn btn-outline-dark btn-square" href="#"><i class="fa fa-shopping-cart"></i></a>
-                                <a class="btn btn-outline-dark btn-square" href="#"><i class="far fa-heart"></i></a>
+                                <a class="btn btn-outline-dark btn-square" href="{% url 'product:like' product.id %}"><i class="far fa-heart"></i></a>
                                 <a class="btn btn-outline-dark btn-square" href="#"><i class="fa fa-sync-alt"></i></a>
                                 <a class="btn btn-outline-dark btn-square" href="{% url 'product:product-detail' pk=product.pk %}"><i class="fa fa-search"></i></a>
                             </div>

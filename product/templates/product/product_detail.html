@@ -23,55 +23,77 @@
 
             <div class="col-lg-7 h-auto mb-30">
                 <div class="h-100 bg-light p-30">
-                    <h3>{{ product.title }}</h3>
-                    <h3 class="font-weight-semi-bold mb-4">{{ product.price }}</h3>
-                    <p class="mb-4">{{ product.description|truncatewords:10 }}</p>
-                    <div class="d-flex mb-3">
-                        {% if product.size.all %}
-                        	<strong class="text-dark mr-3">Sizes:</strong>
-                        {% endif %} 
-                        <form action="{% url 'cart:cart_add' product.id %}" method="post">
-                        {% csrf_token %}
-                            {% for size in product.size.all %}
-                            	<div class="custom-control custom-radio custom-control-inline">
-                                <input type="radio" class="custom-control-input" value="{{ size.title }}" id="{{ size.title }}" name="size">
-                                <label class="custom-control-label" for="{{ size.title }}">{{ size.title }}</label>
-                            </div>
-                            {% endfor %}
+    <h3>{{ product.title }}</h3>
+    <h3 class="font-weight-semi-bold mb-4">{{ product.price }}</h3>
+
+    <!-- Like button with the like count displayed in front of the heart icon -->
+    <a href="{% url 'product:like' pk=product.pk %}" class="btn px-0">
+    <i class="fas fa-heart text-primary"></i>
+    <span style="padding-bottom: 2px; color: green;">
+        {{ like_count }}  <!-- Display the number of likes here -->
+    </span>
+</a>
 
 
+    <p class="mb-4">{{ product.description|truncatewords:10 }}</p>
 
-                    </div>
-                    <div class="d-flex mb-4">
-                        <strong class="text-dark mr-3">Colors:</strong>
-                        <form>
-                            {% for color in product.color.all %}
-                            	<div class="custom-control custom-radio custom-control-inline">
-                                <input type="radio" class="custom-control-input" value="{{ color.title }}" id="{{ color.title }}" name="color">
-                                <label class="custom-control-label" for="{{ color.title }}">{{ color.title }}</label>
-                            </div>
-                            {% endfor %}
+    <div class="d-flex mb-3">
+        {% if product.size.all %}
+            <strong class="text-dark mr-3">Sizes:</strong>
+        {% endif %}
+        <form action="{% url 'cart:cart_add' product.id %}" method="post">
+        {% csrf_token %}
+            {% for size in product.size.all %}
+                <div class="custom-control custom-radio custom-control-inline">
+                    <input type="radio" class="custom-control-input" value="{{ size.title }}" id="{{ size.title }}" name="size">
+                    <label class="custom-control-label" for="{{ size.title }}">{{ size.title }}</label>
+                </div>
+            {% endfor %}
+        </form>
+    </div>
 
-                    </div>
-                    <form class="d-flex align-items-center mb-4 pt-2">
-                        <div class="input-group quantity mr-3" style="width: 130px;">
-                            <div class="input-group-btn">
-                                <button type="button" class="btn btn-primary btn-minus">
-                                    <i class="fa fa-minus"></i>
-                                </button>
-                            </div>
-                            <input type="text" name="quantity" class="form-control bg-secondary border-0 text-center" value="1">
-                            <div class="input-group-btn">
-                                <button type="button" class="btn btn-primary btn-plus">
-                                    <i class="fa fa-plus"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <button class="btn btn-primary px-3"><i class="fa fa-shopping-cart mr-1"></i> Add To
-                            Cart
-                        </button>
-                        </form>
-                    </div>
+    <div class="d-flex mb-4">
+        <strong class="text-dark mr-3">Colors:</strong>
+        <form>
+            {% for color in product.color.all %}
+                <div class="custom-control custom-radio custom-control-inline">
+                    <input type="radio" class="custom-control-input" value="{{ color.title }}" id="{{ color.title }}" name="color">
+                    <label class="custom-control-label" for="{{ color.title }}">{{ color.title }}</label>
+                </div>
+            {% endfor %}
+        </form>
+    </div>
+
+    <form class="d-flex align-items-center mb-4 pt-2">
+        <div class="input-group quantity mr-3" style="width: 130px;">
+            <div class="input-group-btn">
+                <button type="button" class="btn btn-primary btn-minus">
+                    <i class="fa fa-minus"></i>
+                </button>
+            </div>
+            <input type="text" name="quantity" class="form-control bg-secondary border-0 text-center" value="1">
+            <div class="input-group-btn">
+                <button type="button" class="btn btn-primary btn-plus">
+                    <i class="fa fa-plus"></i>
+                </button>
+            </div>
+        </div>
+        <button class="btn btn-primary px-3"><i class="fa fa-shopping-cart mr-1"></i> Add To Cart</button>
+    </form>
+
+    {% if user.is_authenticated %}
+        <div>
+            {% if user_liked %}
+                <a href="{% url 'product:like' pk=product.pk %}" class="btn btn-danger">Unlike</a>
+            {% else %}
+                <a href="{% url 'product:like' pk=product.pk %}" class="btn btn-primary">Like</a>
+            {% endif %}
+        </div>
+    {% else %}
+        <p>You need to log in to like the product.</p>
+    {% endif %}
+</div>
+
                 </div>
             </div>
         </div>
@@ -198,7 +220,7 @@
                             <img class="img-fluid w-100" src="img/product-1.jpg" alt="">
                             <div class="product-action">
                                 <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-shopping-cart"></i></a>
-                                <a class="btn btn-outline-dark btn-square" href=""><i class="far fa-heart"></i></a>
+                                <a class="btn btn-outline-dark btn-square" href="{% url 'product:like' product.id %}"><i class="far fa-heart"></i></a>
                                 <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-sync-alt"></i></a>
                                 <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-search"></i></a>
                             </div>
@@ -216,7 +238,7 @@
                             <img class="img-fluid w-100" src="img/product-2.jpg" alt="">
                             <div class="product-action">
                                 <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-shopping-cart"></i></a>
-                                <a class="btn btn-outline-dark btn-square" href=""><i class="far fa-heart"></i></a>
+                                <a class="btn btn-outline-dark btn-square" href="{% url 'product:like' product.id %}"><i class="far fa-heart"></i></a>
                                 <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-sync-alt"></i></a>
                                 <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-search"></i></a>
                             </div>

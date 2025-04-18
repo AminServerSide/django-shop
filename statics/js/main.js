@@ -146,4 +146,46 @@ document.querySelectorAll('.reply-btn').forEach(button => {
 });
 
 
+document.querySelectorAll('.like-button').forEach(button => {
+    button.addEventListener('click', function() {
+        const productId = this.dataset.productId;  // Get product ID from data attribute
+
+        fetch(`/like_product/${productId}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({ action: 'like' })
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Update UI based on the response
+            if (data.liked) {
+                this.innerText = "Dislike";  // Change button text to 'Dislike'
+            } else {
+                this.innerText = "Like";  // Change button text to 'Like'
+            }
+            document.getElementById(`like-count-${productId}`).innerText = data.total_likes;
+        });
+    });
+});
+
+// Function to get CSRF token
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie) {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+
 

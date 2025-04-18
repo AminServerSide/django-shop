@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django.shortcuts import render, get_object_or_404 , redirect
 from django.views.generic import ListView
 
-from .models import Product, Category , Comment
+from .models import Product, Category , Comment , ProductLike
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.db.models import Q
@@ -12,14 +12,21 @@ from django.db.models import Q
 from django.core.paginator import Paginator
 
 
-
-
 def product_detail_view(request, pk):
     product = get_object_or_404(Product, pk=pk)
     top_level_comments = product.comments.filter(parent__isnull=True).select_related('user').prefetch_related('replies__user')
+
+    # Count the number of likes for the product
+    like_count = ProductLike.objects.filter(product=product, liked=True).count()
+
+    # Check if the current user has liked the product
+    user_liked = ProductLike.objects.filter(product=product, user=request.user).exists() if request.user.is_authenticated else False
+
     return render(request, 'product/product_detail.html', {
         'product': product,
         'comments': top_level_comments,
+        'like_count': like_count,  # Add like count (integer) to the context
+        'user_liked': user_liked,  # Add whether the user has liked the product
     })
 
 def navbar_partial(request):
@@ -112,3 +119,18 @@ def create_comment(request, product_id):
 
 
 
+@login_required
+def like_product(request, pk):
+    try:
+        # Try to get an existing like, if exists
+        like = ProductLike.objects.get(product_id=pk, user_id=request.user.id)
+        # If it exists, delete the like (unlike action)
+        ProductLike.liked = False
+        like.delete()
+    except ProductLike.DoesNotExist:
+        # If the like doesn't exist, create a new like (like action)
+        ProductLike.objects.create(product_id=pk, user_id=request.user.id)
+        ProductLike.liked = True
+
+    # Redirect to product detail page using pk
+    return redirect('product:product-detail', pk=pk)
