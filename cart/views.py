@@ -38,6 +38,11 @@ def cart_add_view(request, pk):
         cart = Cart(request)
         cart.add(product, quantity, color, size)
         return redirect("cart:cart_detail")
+    else:
+        cart = Cart(request)
+        product = get_object_or_404(Product, id=pk)
+        cart.add(product=product, quantity=1, color='black', size="M")
+        return redirect("cart:cart_detail")
 
 
 def cart_remove_view(request, pk):

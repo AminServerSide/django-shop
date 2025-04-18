@@ -22,7 +22,7 @@ class OrderItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="item")
     size = models.CharField(max_length=10)
     color = models.CharField(max_length=10)
-    quantity = models.IntegerField()
+    quantity = models.IntegerField(default=1)
     price = models.DecimalField(max_digits=20, decimal_places=2)
 
     def __str__(self):

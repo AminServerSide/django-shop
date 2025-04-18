@@ -1,41 +1,44 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block main %}
-
-<!-- Category Detail Start -->
-<div class="container-fluid py-5">
+<!-- Shop Start -->
+<div class="container-fluid">
     <div class="row px-xl-5">
+        <!-- Sidebar and Filters (same as before) -->
         <div class="col-lg-3 col-md-4">
-            <!-- Sidebar content here -->
+            <!-- Sidebar content here (filters, etc.) -->
         </div>
 
+        <!-- Category List Start -->
         <div class="col-lg-9 col-md-8">
-            <h3 class="text-uppercase">{{ category.title }}</h3>
-
             <div class="row pb-3">
-                {% for product in page_obj %}
-                <div class="col-lg-4 col-md-6 col-sm-6 pb-1">
-                    <div class="product-item bg-light mb-4">
-                        <div class="product-img position-relative overflow-hidden">
-                            <img class="img-fluid w-100" src="{{ product.image.url }}" alt="Static Product" style="height: 200px; object-fit: cover;">
-                            <div class="product-action">
-                                <a class="btn btn-outline-dark btn-square" href="{% url 'cart:cart_add' product.id %}"><i class="fa fa-shopping-cart"></i></a>
-                                <a class="btn btn-outline-dark btn-square" href="{% url 'product:like' product.id %}"><i class="far fa-heart"></i></a>
-                                <a class="btn btn-outline-dark btn-square" href="#"><i class="fa fa-sync-alt"></i></a>
-                                <a class="btn btn-outline-dark btn-square" href="{% url 'product:product-detail' pk=product.pk %}"><i class="fa fa-search"></i></a>
-                            </div>
+                <div class="col-12 pb-1">
+                    <div class="d-flex align-items-center justify-content-between mb-4">
+                        <div>
+                            <button class="btn btn-sm btn-light"><i class="fa fa-th-large"></i></button>
+                            <button class="btn btn-sm btn-light ml-2"><i class="fa fa-bars"></i></button>
                         </div>
-                        <div class="text-center py-4">
-                            <a class="h6 text-decoration-none text-truncate" href="{% url 'product:product-detail' pk=product.pk %}">{{ product.title }}</a>
-                            <div class="d-flex align-items-center justify-content-center mt-2">
-                                <h5>${{ product.price }}</h5>
+                    </div>
+                </div>
+
+                {% for category in page_obj %}
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <a href="{% url 'product:category_detail' category.pk %}" class="text-decoration-none text-dark">
+                            {% if category.image %}
+                                <img src="{{ category.image.url }}" class="card-img-top" alt="{{ category.title }}" style="height: 200px; object-fit: cover;">
+                            {% else %}
+                                <img src="{% static 'img/placeholder.png' %}" class="card-img-top" alt="No Image">
+                            {% endif %}
+                            <div class="card-body">
+                                <h5 class="card-title text-center">{{ category.title }}</h5>
                             </div>
-                        </div>
+                        </a>
                     </div>
                 </div>
                 {% endfor %}
 
-                <!-- Pagination for Products -->
+                <!-- Pagination -->
                 <div class="col-12">
                     {% if page_obj.has_previous %}
                         <nav>
@@ -61,8 +64,8 @@
                 </div>
             </div>
         </div>
+        <!-- Category List End -->
     </div>
 </div>
-<!-- Category Detail End -->
-
+<!-- Shop End -->
 {% endblock %}

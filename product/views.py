@@ -10,7 +10,9 @@ from django.db.models import Q
 
 
 from django.core.paginator import Paginator
-
+def all_products(request):
+    products = Product.objects.all()  # Get all products
+    return render(request, 'product/products_list.html', {'products': products})
 
 def product_detail_view(request, pk):
     product = get_object_or_404(Product, pk=pk)
@@ -39,12 +41,23 @@ def category_list(request):
     context = {'categories': categories}
     return render(request, 'includes/categories.html', context)
 
+def all_categories(request):
+    categories = Category.objects.all()
+    paginator = Paginator(categories, 9)  # 9 categories per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    return render(request, 'product/category_list.html', {'page_obj': page_obj})
+
+# Category Detail View with Pagination for Products
 def category_detail(request, pk):
     category = get_object_or_404(Category, pk=pk)
     products = Product.objects.filter(category=category)
+    paginator = Paginator(products, 9)  # 9 products per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
     return render(request, 'product/category_detail.html', {
         'category': category,
-        'products': products
+        'page_obj': page_obj
     })
 
 
@@ -81,6 +94,7 @@ class ProductListView(ListView):
             del query['page']
         context['query_params'] = query.urlencode()
         return context
+
 
 
 def search_products(request):
