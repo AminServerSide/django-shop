@@ -15,7 +15,8 @@ def login_user(request):
         form = LoginForm(request.POST)
         if form.is_valid():
             cd = form.cleaned_data
-            user = User.objects.get(email=cd["email"])  # Retrieve user by email
+            user = User.objects.get(email=cd["email"])
+            print(user)# Retrieve user by email
             login(request, user)
             next_page = request.GET.get("next")
             if next_page:
@@ -25,6 +26,8 @@ def login_user(request):
             form.add_error("email", "Invalid email or password")
     else:
         form = LoginForm()
+
+
 
     return render(request, "account/login.html", {"form": form})
 
