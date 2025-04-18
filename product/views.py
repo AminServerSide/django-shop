@@ -7,9 +7,11 @@ from .models import Product, Category , Comment , ProductLike
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.db.models import Q
-
-
 from django.core.paginator import Paginator
+
+
+
+
 def all_products(request):
     products = Product.objects.all()  # Get all products
     return render(request, 'product/products_list.html', {'products': products})
@@ -74,6 +76,8 @@ class ProductListView(ListView):
         sizes = request.GET.getlist('size')
         min_price = request.GET.get('min-price')
         max_price = request.GET.get('max-price')
+        sort = request.GET.get('sort')  # Get sort query param
+
         queryset = Product.objects.all()
 
         if colors:
@@ -84,6 +88,14 @@ class ProductListView(ListView):
 
         if min_price and max_price:
             queryset = queryset.filter(price__gte=min_price, price__lte=max_price)
+
+        # ✅ Apply sorting if specified
+        if sort == 'latest':
+            queryset = queryset.order_by('-created_at')  # Replace with your actual datetime field
+        elif sort == 'most_expensive':
+            queryset = queryset.order_by('-price')
+        elif sort == 'most_cheap':
+            queryset = queryset.order_by('price')
 
         return queryset
 

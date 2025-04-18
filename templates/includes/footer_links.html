@@ -1,6 +1,6 @@
 {% load static %}
-
-
+{% load cache %}
+{% cache 300 link %}
     <!-- Back to Top -->
     <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
 
@@ -16,3 +16,4 @@
 
     <!-- Template Javascript -->
     <script src="{% static 'js/main.js' %}"></script>
+{% endcache %}

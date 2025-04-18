@@ -35,7 +35,7 @@ class Product(models.Model):
     description = models.TextField()
     price = models.FloatField()
     discount = models.FloatField()
-    image = models.ImageField(upload_to="images/", null=True, blank=True)
+    image = models.ImageField(upload_to="images/", null=True, blank=True , default="images/blank.png")
     size = models.ManyToManyField(Size , blank=True , null=True ,related_name="product")
     color = models.ManyToManyField(Color, related_name="product" , blank=True , null=True)
     created = models.DateTimeField(auto_now_add=True)

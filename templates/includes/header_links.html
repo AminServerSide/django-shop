@@ -1,5 +1,7 @@
 {% load static %}
+{% load cache %}
 
+{% cache 300 nav %}
     <meta charset="utf-8">
     <title>MultiShop - Online Shop Website Template</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
@@ -22,3 +24,5 @@
 
     <!-- Customized Bootstrap Stylesheet -->
     <link href="{% static 'css/style.css' %}" rel="stylesheet">
+
+{% endcache %}

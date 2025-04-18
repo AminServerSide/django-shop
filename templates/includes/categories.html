@@ -85,7 +85,7 @@
     {% for category in categories %}
         {% if not category.parent %}
             <li class="parent">
-                <a href="#">{{ category.title }}</a>
+                <a href="{% url 'product:category_detail' category.pk %}">{{ category.title }}</a>
                 {% if category.subs.all %}
                     <ul class="dropdown">
                         {% include 'includes/sub_categories.html' %}

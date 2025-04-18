@@ -101,12 +101,18 @@
                         </div>
                         <div class="ml-2">
                             <div class="btn-group">
-                                <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">Sorting</button>
+                                <form method="GET" action="{% url 'product:products_list' %}">
+                                <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                    Sorting
+                                </button>
                                 <div class="dropdown-menu dropdown-menu-right">
-                                    <a class="dropdown-item" href="#">Latest</a>
-                                    <a class="dropdown-item" href="#">Popularity</a>
-                                    <a class="dropdown-item" href="#">Best Rating</a>
+                                    <button type="submit" name="sort" value="latest" class="dropdown-item">Latest</button>
+                                    <button type="submit" name="sort" value="most_expensive" class="dropdown-item">Most Expensive</button>
+                                    <button type="submit" name="sort" value="most_cheap" class="dropdown-item">Most Cheap</button>
                                 </div>
+                            </form>
+
+
                             </div>
                             <div class="btn-group ml-2">
                                 <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">Showing</button>
