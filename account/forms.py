@@ -9,21 +9,20 @@ from django.contrib.auth import authenticate
 
 
 class UserCreationForm(forms.ModelForm):
-    """A form for creating new users. Includes all the required fields, plus a repeated password."""
     password1 = forms.CharField(
         label="Password",
-        widget=forms.PasswordInput(attrs={"class": "form-control", "placeholder": "Enter your password" , "type": "password"}),
+        widget=forms.PasswordInput(attrs={"class": "form-control", "placeholder": "Enter your password"}),
     )
     password2 = forms.CharField(
         label="Password confirmation",
-        widget=forms.PasswordInput(attrs={"class": "form-control", "placeholder": "Confirm your password" , "type": "password"}),
+        widget=forms.PasswordInput(attrs={"class": "form-control", "placeholder": "Confirm your password"}),
     )
 
     class Meta:
         model = User
         fields = ["email", "fullname"]
         widgets = {
-            "email": forms.EmailInput(attrs={"class": "form-control", "placeholder": "Enter your email" , "type": "email"}),
+            "email": forms.EmailInput(attrs={"class": "form-control", "placeholder": "Enter your email"}),
             "fullname": forms.TextInput(attrs={"class": "form-control", "placeholder": "Enter your full name"}),
         }
 
@@ -42,10 +41,12 @@ class UserCreationForm(forms.ModelForm):
 
     def save(self, commit=True):
         user = super().save(commit=False)
+        # ✅ Hashes the password
         user.set_password(self.cleaned_data["password1"])
         if commit:
             user.save()
         return user
+
 
 
 class UserChangeForm(forms.ModelForm):

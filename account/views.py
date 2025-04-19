@@ -15,19 +15,16 @@ def login_user(request):
         form = LoginForm(request.POST)
         if form.is_valid():
             cd = form.cleaned_data
-            user = User.objects.get(email=cd["email"])
-            print(user)# Retrieve user by email
-            login(request, user)
-            next_page = request.GET.get("next")
-            if next_page:
-                return redirect(next_page)
-            return redirect("/")
-        else:
-            form.add_error("email", "Invalid email or password")
+            # ✅ Use authenticate instead of manual lookup
+            user = authenticate(request, username=cd["email"], password=cd["password"])
+            if user is not None and user.is_active:
+                login(request, user)
+                next_page = request.GET.get("next")
+                return redirect(next_page or "/")
+            else:
+                form.add_error(None, "Invalid email or password")
     else:
         form = LoginForm()
-
-
 
     return render(request, "account/login.html", {"form": form})
 
@@ -36,8 +33,8 @@ def register_user(request):
     if request.method == "POST":
         form = UserCreationForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            login(request, user)  # Log the user in after successful registration
+            user = form.save()  # ✅ password is already hashed in the form
+            login(request, user)
             messages.success(request, "Registration successful! Welcome!")
             return redirect("/")
         else:
