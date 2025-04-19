@@ -1,10 +1,7 @@
 from django import forms
-
-from . import models
 from .models import User, Address
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.core.exceptions import ValidationError
-from django.core.validators import validate_email
 from django.contrib.auth import authenticate
 
 
@@ -17,10 +14,11 @@ class UserCreationForm(forms.ModelForm):
         label="Password confirmation",
         widget=forms.PasswordInput(attrs={"class": "form-control", "placeholder": "Confirm your password"}),
     )
+    is_seller = forms.BooleanField(required=False, label="Register as seller")
 
     class Meta:
         model = User
-        fields = ["email", "fullname"]
+        fields = ["email", "fullname", "is_seller"]
         widgets = {
             "email": forms.EmailInput(attrs={"class": "form-control", "placeholder": "Enter your email"}),
             "fullname": forms.TextInput(attrs={"class": "form-control", "placeholder": "Enter your full name"}),
@@ -41,29 +39,27 @@ class UserCreationForm(forms.ModelForm):
 
     def save(self, commit=True):
         user = super().save(commit=False)
-        # ✅ Hashes the password
         user.set_password(self.cleaned_data["password1"])
+        user.is_seller = self.cleaned_data.get("is_seller", False)
         if commit:
             user.save()
         return user
 
 
-
 class UserChangeForm(forms.ModelForm):
-    """A form for updating users. Includes all the fields on the user, but replaces the password field with admin's disabled password hash display field."""
     password = ReadOnlyPasswordHashField()
 
     class Meta:
         model = User
-        fields = ["email", "password", "phone", "is_active", "is_admin"]
+        fields = ["email", "password", "phone", "is_active", "is_admin", "is_seller"]
 
 
 class LoginForm(forms.Form):
     email = forms.EmailField(
-        widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "Enter your email" , "type": "email"}),
+        widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "Enter your email", "type": "email"}),
     )
     password = forms.CharField(
-        widget=forms.PasswordInput(attrs={"class": "form-control", "placeholder": "Enter your password" , "type": "password"}),
+        widget=forms.PasswordInput(attrs={"class": "form-control", "placeholder": "Enter your password", "type": "password"}),
     )
 
     def clean_email(self):
@@ -84,8 +80,10 @@ class LoginForm(forms.Form):
 
         return cleaned_data
 
+
 class AddressCreationForm(forms.ModelForm):
     user = forms.IntegerField(required=False)
+
     class Meta:
         model = Address
         exclude = "__all__"

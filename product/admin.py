@@ -1,52 +1,60 @@
 from django.contrib import admin
-from .models import Size, Color, Category, Product, Information , Comment , ProductLike
+from .models import Size, Color, Category, Product, Information, Comment, ProductLike
 
 class SizeAdmin(admin.ModelAdmin):
-    list_display = ('title',)  # Columns to display in the list view
-    search_fields = ('title',)  # Enable search functionality
+    list_display = ('title',)
+    search_fields = ('title',)
 
 class ColorAdmin(admin.ModelAdmin):
-    list_display = ('title',)  # Columns to display in the list view
-    search_fields = ('title',)  # Enable search functionality
+    list_display = ('title',)
+    search_fields = ('title',)
 
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('title', 'parent')  # Display category title and parent
-    search_fields = ('title',)  # Enable search functionality
-    prepopulated_fields = {'slug': ('title',)}  # Automatically fill slug from the title
-    list_filter = ('parent',)  # Allow filtering by parent category
-
+    list_display = ('title', 'parent')
+    search_fields = ('title',)
+    prepopulated_fields = {'slug': ('title',)}
+    list_filter = ('parent',)
 
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('title', 'price', 'discount', 'category_list')  # Display product info
-    search_fields = ('title', 'description')  # Enable search functionality
-    list_filter = ('category', 'size', 'color')  # Allow filtering by category, size, and color
-    filter_horizontal = ('category', 'size', 'color')  # Display many-to-many fields more easily
+    list_display = ('title', 'price', 'discount', 'seller', 'category_list')
+    search_fields = ('title', 'description', 'seller__fullname')
+    list_filter = ('category', 'size', 'color', 'seller')
+    filter_horizontal = ('category', 'size', 'color')
+    ordering = ('-created',)
+
     fieldsets = (
         (None, {
-            'fields': ('title', 'description', 'price', 'discount', 'image', 'category', 'size', 'color')
+            'fields': (
+                'title',
+                'description',
+                'price',
+                'discount',
+                'image',
+                'category',
+                'size',
+                'color',
+                'seller',  # 👈 Added seller field here
+            )
         }),
-    )  # Organize fields in the admin form
-    actions = ['apply_discount']  # Custom admin actions
-    ordering = ('-created',)  # Sort by creation time (descending)
+    )
 
-    # Custom method to display the categories associated with the product
+    actions = ['apply_discount']
+
     def category_list(self, obj):
         return ", ".join([category.title for category in obj.category.all()])
     category_list.short_description = 'Categories'
 
-    # Custom action to apply a discount to selected products
     def apply_discount(self, request, queryset):
         discount_percentage = request.POST.get('discount_percentage', 0)
         queryset.update(discount=discount_percentage)
         self.message_user(request, f'Discount of {discount_percentage}% applied to selected products.')
-
     apply_discount.short_description = 'Apply Discount'
 
 class InformationAdmin(admin.ModelAdmin):
-    list_display = ('product', 'text')  # Display product and text in the list view
-    search_fields = ('text',)  # Enable search functionality
+    list_display = ('product', 'text')
+    search_fields = ('text',)
 
-# Register the models with the custom admin classes
+# Register models
 admin.site.register(Size, SizeAdmin)
 admin.site.register(Color, ColorAdmin)
 admin.site.register(Category, CategoryAdmin)

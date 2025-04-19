@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block main %}
+    <!-- templates/account/seller_dashboard.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Seller Dashboard</title>
+</head>
+<body>
+    <h1>Seller Dashboard</h1>
+
+    <p>Welcome, {{ user.fullname }} ({{ user.email }})</p>
+    <p><strong>Status:</strong> {% if user.is_seller %}Verified Seller{% else %}Not a Seller{% endif %}</p>
+
+    <hr>
+
+    <h2>Seller Options</h2>
+    <ul>
+        <li><a href="#">Manage Products</a></li>
+        <li><a href="#">View Orders</a></li>
+        <li><a href="#">Check Earnings</a></li>
+    </ul>
+
+    <hr>
+
+    <p><a href="{% url 'account:user_dashboard' %}">Back to User Dashboard</a></p>
+    <p><a href="{% url 'account:user_logout' %}">Logout</a></p>
+</body>
+</html>
+
+
+{% endblock %}

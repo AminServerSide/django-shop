@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block main %}
+    <!-- templates/product/seller_product_manage.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Your Products</title>
+</head>
+<body>
+    <h1>Product Management Dashboard</h1>
+
+    <p>Welcome, {{ user.fullname }} ({{ user.email }})</p>
+    <a href="{% url 'account:user_dashboard' %}">← Back to Dashboard</a>
+    <hr>
+
+    <h2>Your Products</h2>
+
+    {% if products %}
+        <table border="1" cellpadding="10">
+            <thead>
+                <tr>
+                    <th>Image</th>
+                    <th>Title</th>
+                    <th>Price</th>
+                    <th>Discount</th>
+                    <th>Categories</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                <tr>
+                    <td>
+                        {% if product.image %}
+                            <img src="{{ product.image.url }}" width="60" height="60" alt="{{ product.title }}">
+                        {% else %}
+                            No Image
+                        {% endif %}
+                    </td>
+                    <td>{{ product.title }}</td>
+                    <td>${{ product.price }}</td>
+                    <td>{{ product.discount }}%</td>
+                    <td>
+                        {% for category in product.category.all %}
+                            {{ category.title }}{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    </td>
+                    <td>{{ product.created|date:"Y-m-d" }}</td>
+                    <td>
+                        <a href="{% url 'product:product-detail' product.pk %}">View</a> |
+                        <a href="#">Edit</a> |
+                        <a href="#">Delete</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>You have no products listed.</p>
+    {% endif %}
+
+    <hr>
+    <p><a href="#">+ Add New Product</a></p>
+</body>
+</html>
+
+{% endblock %}

@@ -4,10 +4,11 @@ from django.shortcuts import render, get_object_or_404 , redirect
 from django.views.generic import ListView
 
 from .models import Product, Category , Comment , ProductLike
-from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.db.models import Q
 from django.core.paginator import Paginator
+from django.contrib.auth.decorators import login_required, user_passes_test
+from .forms import ProductForm
 
 
 
@@ -160,3 +161,31 @@ def like_product(request, pk):
 
     # Redirect to product detail page using pk
     return redirect('product:product-detail', pk=pk)
+
+
+@login_required
+@user_passes_test(lambda u: u.is_seller)
+def manage_products(request):
+    products = Product.objects.filter(seller=request.user)
+    return render(request, 'product/manage_products.html', {'products': products})
+
+
+
+def is_seller(user):
+    return hasattr(user, 'is_seller') and user.is_seller
+
+@login_required
+@user_passes_test(is_seller)
+def add_product(request):
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES)
+        if form.is_valid():
+            product = form.save(commit=False)
+            product.seller = request.user  # Assign logged-in user as seller
+            product.save()
+            form.save_m2m()  # Save many-to-many data
+            return redirect('product:products_list')  # Change this to your desired redirect
+    else:
+        form = ProductForm()
+    return render(request, 'product/add_product.html', {'form': form})
+

@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block main %}
+	<!-- templates/account/user_dashboard.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Dashboard</title>
+</head>
+<body>
+    <h1>Welcome, {{ user.fullname }}!</h1>
+
+    <p><strong>Email:</strong> {{ user.email }}</p>
+    <p><strong>Phone:</strong> {{ user.phone }}</p>
+    <p><strong>Role:</strong>
+        {% if user.is_admin %}
+            Admin
+        {% elif user.is_seller %}
+            Seller
+        {% else %}
+            Normal User
+        {% endif %}
+    </p>
+
+    <hr>
+
+    <h2>Account Actions</h2>
+    <ul>
+        <li><a href="{% url 'account:add_address' %}">Add Address</a></li>
+        <li><a href="{% url 'cart:cart_detail' %}">Shopping Cart</a></li>
+    </ul>
+
+    {% if user.is_seller %}
+        <p><a href="{% url 'account:seller_dashboard' %}">Go to Seller Dashboard</a></p>
+    {% endif %}
+</body>
+</html>
+
+{% endblock %}

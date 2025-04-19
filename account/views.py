@@ -1,4 +1,4 @@
-from django.contrib.auth import authenticate, login , logout
+from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.views import View
@@ -6,7 +6,7 @@ from django.views.decorators.http import require_POST
 
 from cart.cart_modules import Cart
 from cart.models import Order, OrderItem
-from .forms import LoginForm, UserCreationForm , AddressCreationForm
+from .forms import LoginForm, UserCreationForm, AddressCreationForm
 from .models import User
 
 
@@ -36,7 +36,11 @@ def register_user(request):
             user = form.save()  # ✅ password is already hashed in the form
             login(request, user)
             messages.success(request, "Registration successful! Welcome!")
-            return redirect("/")
+
+            # Redirect based on whether the user is a seller or a regular user
+            if user.is_seller:
+                return redirect("/seller_dashboard")  # Redirect to seller's dashboard or page
+            return redirect("/")  # Regular user redirect
         else:
             messages.error(request, "Please correct the errors below.")
     else:
@@ -48,7 +52,6 @@ def register_user(request):
 def logout_user(request):
     logout(request)
     return redirect("/")
-
 
 
 def add_address(request):
@@ -67,13 +70,20 @@ def add_address(request):
     return render(request, "account/add_address.html", {"form": form})
 
 
+# Seller Dashboard (new view)
+def seller_dashboard(request):
+    if not request.user.is_seller:
+        return redirect("/")  # Redirect non-sellers to the home page or appropriate page
+
+    # Seller-specific logic (e.g., manage products, view orders, etc.)
+    return render(request, "account/seller_dashboard.html")
 
 
+# You can also define views for managing products, orders, etc., for sellers.
 
+def user_dashboard(request):
+    # Fetch user data
+    user = request.user
 
-
-
-
-
-
-
+    # Render the user dashboard template with the user context
+    return render(request, "account/user_dashboard.html", {"user": user})

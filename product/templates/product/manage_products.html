@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block main %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manage Products</title>
+</head>
+<body>
+    <h1>Your Products</h1>
+    <ul>
+        {% for product in products %}
+            <li>
+                <strong>{{ product.title }}</strong> - {{ product.price }}$
+                <br>
+                <img src="{{ product.image.url }}" width="100">
+            </li>
+        {% empty %}
+            <li>No products found.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
+
+{% endblock %}
