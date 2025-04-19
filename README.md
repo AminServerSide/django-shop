@@ -80,4 +80,15 @@ DjangoProject/
 This project is for educational and demonstration purposes. Please review and update the license as needed.
 
 ---
+## hint
+
+ **this app use redis an docker. do this first:**:
+   ```bash
+   docker pull redis
+   ```
+
+ ### and do this:
+ ```bash
+   docker -d -p  6379:6379 --name redis-container redis
+   ```
 *Generated on 2025-04-18*
