@@ -167,7 +167,11 @@ def like_product(request, pk):
 @user_passes_test(lambda u: u.is_seller)
 def manage_products(request):
     products = Product.objects.filter(seller=request.user)
-    return render(request, 'product/manage_products.html', {'products': products})
+    paginator = Paginator(products, 4)
+
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    return render(request, 'product/manage_products.html', {'page_obj': page_obj})
 
 
 
