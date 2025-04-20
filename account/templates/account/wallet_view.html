@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block main %}
+  <h1>Wallet Information</h1>
+  {% if wallet %}
+    <p>Balance: {{ wallet.balance }}</p>
+  {% else %}
+    <p>No wallet information available.</p>
+  {% endif %}
+{% endblock %}

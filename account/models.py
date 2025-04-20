@@ -19,7 +19,7 @@ class UserManager(BaseUserManager):
         user = self.create_user(
             email,
             password=password,
-            is_seller=False,  # Optional: admin might not be seller
+            is_seller=False,
         )
         user.is_admin = True
         user.save(using=self._db)
@@ -36,7 +36,7 @@ class User(AbstractBaseUser):
     phone = models.CharField(max_length=255, unique=True, null=True, blank=True)
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
-    is_seller = models.BooleanField(default=False)  # ✅ New field
+    is_seller = models.BooleanField(default=False)
 
     objects = UserManager()
 
@@ -57,10 +57,8 @@ class User(AbstractBaseUser):
         return self.is_admin
 
 
-
-
 class Address(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE , related_name="addresses")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="addresses")
     fullname = models.CharField(max_length=255)
     email = models.EmailField()
     phone = models.CharField(max_length=255)
@@ -71,6 +69,10 @@ class Address(models.Model):
         return self.user.phone
 
 
+class Wallet(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='wallet')
+    balance = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+    updated_at = models.DateTimeField(auto_now=True)
 
-
-
+    def __str__(self):
+        return f"{self.user.email} - Balance: {self.balance}"

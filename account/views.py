@@ -73,17 +73,19 @@ def add_address(request):
 # Seller Dashboard (new view)
 def seller_dashboard(request):
     if not request.user.is_seller:
-        return redirect("/")  # Redirect non-sellers to the home page or appropriate page
+        return redirect("/")
+    wallet = getattr(request.user, 'wallet', None)
+    return render(request, "account/seller_dashboard.html", {"wallet": wallet})
 
-    # Seller-specific logic (e.g., manage products, view orders, etc.)
-    return render(request, "account/seller_dashboard.html")
-
-
-# You can also define views for managing products, orders, etc., for sellers.
 
 def user_dashboard(request):
-    # Fetch user data
     user = request.user
+    wallet = getattr(user, 'wallet', None)
+    return render(request, "account/user_dashboard.html", {"user": user, "wallet": wallet})
 
-    # Render the user dashboard template with the user context
-    return render(request, "account/user_dashboard.html", {"user": user})
+def wallet_view(request):
+    # Ensure the user is logged in and has a wallet
+    if request.user.is_authenticated:
+        wallet = getattr(request.user, 'wallet', None)
+        return render(request, "account/wallet_view.html", {"wallet": wallet})
+    return redirect("account:user_login")  # Redirect to login if not authenticated
